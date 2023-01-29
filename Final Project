@@ -1,0 +1,118 @@
+DOCTYPE html>
+<html>
+<head>
+   
+	<title>Oil Spills in US Waters</title>
+	<script src="https://d3js.org/d3.v3.min.js"></script>
+	<style>
+
+    	text { 
+			font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif; 
+			font-size: 20px;
+		}
+		.axis path, .axis line {
+			fill: none;
+			stroke: black;
+			shape-rendering: crispEdges;
+		}
+		.tick text {
+			fill: black;
+			font-size: 11px;
+		}
+
+		rect {
+			stroke: white;
+		}
+	</style>
+</head>
+<body>
+
+	<svg id="main" width="750" height="500" style=" border: solid 1px black">
+		<text id='label' x='70' y='25'>Number of Tanker Oil Spills in the US Waterways 1995-2020</text>
+		<g transform="translate(30,40)"></g>
+	</svg>
+
+	
+	<script>
+
+		var CHART_WIDTH = 650;//width of chart
+		var CHART_HEIGHT = 380;//height of chart
+
+		var MAX_BAR_HEIGHT = 636834;
+
+		var OilSpills = [];
+
+		function drawLineChart() 
+		{
+			var maxValue=d3.max(OilSpills),
+            xScale=d3.scale.linear();
+            yScale=d3.scale.linear();
+            
+            xScale.domain([1995,2020]).range([0,CHART_WIDTH]);
+            yScale.domain([1,200]).range([CHART_HEIGHT,0]);
+            
+            var pathGenerator=d3.svg.line()
+                .x(function(d) {return xScale(d.year); })
+                .y(function(d) {return yScale(d.production)});
+
+                
+          	var g = d3.select('svg').select('g');
+
+
+			var xAxis = d3.svg.axis()
+    			.scale(xScale)
+    			.orient('bottom')
+    			.tickFormat(function(d) { return "" + d; })
+
+    		var yAxis = d3.svg.axis()
+    			.scale(yScale)
+    			.orient('left');
+
+
+    		g.append('g')
+    			.attr('class', 'axis')
+    			.attr('transform', 'translate(0,' + CHART_HEIGHT + ')')
+    			.call(xAxis);
+
+    		g.append('g')
+    			.attr('class', 'axis')
+    			.call(yAxis);
+
+                
+
+    		g.append('path')
+    			.style('fill', 'none')
+    			.style('stroke', 'blue')
+    			.style('stroke-width', '3px')
+    			.attr('d', pathGenerator(OilSpills));
+		}
+		
+        
+
+		d3.csv('OSpillH.csv', function(data)
+           { 
+            for ( var i=0; i<data.length; i++)
+            {
+				var record = data[i];
+				
+				// loop through all years, from 1980 to 2012
+				for (var y=1995; y<=2020; y++) 
+				{
+					var value = record[y];
+					var object = {
+						year: y,
+						production: +value
+					};
+
+				OilSpills.push(object);
+			}
+        }   
+			drawLineChart();
+
+		});
+		
+	</script>
+</body>
+
+
+</html>
