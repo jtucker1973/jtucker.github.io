@@ -1,2 +1,2 @@
-# jtucker.github.io
+# Jessica Tucker
 Data Visualization Final
